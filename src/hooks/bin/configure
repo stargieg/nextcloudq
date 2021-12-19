@@ -64,7 +64,7 @@ handle_apache_port_config()
 	apache_set_previous_https_port "$https_port"
 
 	# Restart Apache to apply new config
-	snapctl restart nextcloud.apache
+	snapctl restart "$SNAP_INSTANCE_NAME".apache
 }
 
 handle_php_memory_limit()
@@ -89,7 +89,7 @@ handle_php_memory_limit()
 	php_set_previous_memory_limit "$memory_limit"
 
 	# Restart PHP to apply new config
-	snapctl restart nextcloud.php-fpm
+	snapctl restart "$SNAP_INSTANCE_NAME".php-fpm
 }
 
 handle_cronjob_interval()
@@ -114,7 +114,7 @@ handle_cronjob_interval()
 	set_previous_cronjob_interval "$interval"
 
 	# Restart cronjob to apply new config
-	snapctl restart nextcloud.nextcloud-cron
+	snapctl restart "$SNAP_INSTANCE_NAME".nextcloud-cron
 }
 
 handle_mode()
@@ -134,8 +134,8 @@ handle_mode()
 	fi
 
 	# Restart all affected services. As of now that's Apache and PHP.
-	snapctl restart nextcloud.apache
-	snapctl restart nextcloud.php-fpm
+	snapctl restart "$SNAP_INSTANCE_NAME".apache
+	snapctl restart "$SNAP_INSTANCE_NAME".php-fpm
 }
 
 handle_http_compression()
@@ -153,7 +153,7 @@ handle_http_compression()
 	fi
 
 	# Restart Apache to apply new config
-	snapctl restart nextcloud.apache
+	snapctl restart "$SNAP_INSTANCE_NAME".apache
 }
 
 handle_apache_port_config
