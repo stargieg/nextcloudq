@@ -4,8 +4,8 @@ import shutil
 import re
 import subprocess
 
-import snapcraft
-from snapcraft.plugins.v1 import make
+import snapcraft_legacy
+from snapcraft_legacy.plugins.v1 import make
 
 logger = logging.getLogger(__name__)
 
