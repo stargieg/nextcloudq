@@ -1,8 +1,8 @@
 import subprocess
-import snapcraft.plugins.v1
+import snapcraft_legacy.plugins.v1
 
 
-class ApachePlugin(snapcraft.plugins.v1.PluginV1):
+class ApachePlugin(snapcraft_legacy.plugins.v1.PluginV1):
 
     @classmethod
     def schema(cls):
