@@ -4,8 +4,8 @@ import shutil
 import re
 import subprocess
 
-import snapcraft
-from snapcraft.plugins.v1 import autotools
+import snapcraft_legacy
+from snapcraft_legacy.plugins.v1 import autotools
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class PhpPlugin(autotools.AutotoolsPlugin):
             extension_source_directory = os.path.join(
                 extension.extension_directory, 'src')
             os.makedirs(extension_source_directory)
-            snapcraft.sources.get(extension_source_directory, None, extension)
+            snapcraft_legacy.sources.get(extension_source_directory, None, extension)
 
     def clean_pull(self):
         super().clean_pull()
