@@ -1,19 +1,29 @@
 #!/bin/sh
 
+# sudo src/import-export/bin/import-data /home/name/git/backup0/20230127-034839
+
+
 if [ "$(id -u)" -ne 0 ]; then
 	echo "This utility needs to run as root"
 	exit 1
 fi
 
+SNAP="src/common"
+SNAP_DATA=/var/snap/nextcloud/current/
+MYSQL_ROOT_OPTION_FILE="$SNAP_DATA/mysql/root.ini"
+CUSTOM_NEXTCLOUD_DATADIR="/var/snap/nextcloud/common/nextcloud/data"
+
 # shellcheck source=src/nextcloud/utilities/nextcloud-utilities
-. "$SNAP/utilities/nextcloud-utilities"
+. "src/nextcloud/utilities/nextcloud-utilities"
 # shellcheck source=src/mysql/utilities/mysql-utilities
-. "$SNAP/utilities/mysql-utilities"
-# shellcheck source=src/common/utilities/common-utilities
-. "$SNAP/utilities/common-utilities"
+# . "$SNAP/utilities/mysql-utilities"
+. "src/mysql/utilities/mysql-utilities"
+. src/common/utilities/common-utilities
+. $SNAP/utilities
+
 
 # shellcheck disable=SC2119
-wait_for_mysql
+#wait_for_mysql
 
 COMMAND="nextcloud.import"
 
@@ -51,15 +61,25 @@ import_database()
 	database_backup="${backup_dir}/database.sql"
 
 	# First, drop the database (if any)
-	run_command "Dropping existing database" run-mysql -e "DROP DATABASE nextcloud"
-	run_command "Creating new database" run-mysql -e "CREATE DATABASE nextcloud"
+	run_command "Dropping existing database" mysql -h 127.0.0.1 -pmysql_password -e "DROP DATABASE nextcloud"
+	run_command "Creating new database" mysql -h 127.0.0.1 -pmysql_password -e "CREATE DATABASE nextcloud"
+	# run_command "Creating new database" mysql -h 127.0.0.1 -pmysql_password -e "CREATE DATABASE root"
 	run_command "Granting database privileges to existing user" \
-	            run-mysql -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'"
-
+	            # run-mysql -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'"
+	            # mysql -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'127:0.0.1'"
+	            mysql -u root -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'root'@'127:0.0.1'"
+	mysql -u root -pmysql_password -h 127.0.0.1 -e "CREATE USER 'oc_root'@'127.0.0.1' IDENTIFIED BY 'mot_de_passe';"
+	run_command "Granting database privileges to existing nextcloud user" \
+	            # mysql -u root -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'127:0.0.1'" 
+	            # mysql -u root -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'oc_root'@'127:0.0.1'" 
+	            # mysql -u root -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'oc_root'@'localhost'" 
+	            mysql -u root -h 127.0.0.1 -pmysql_password -e "GRANT ALL PRIVILEGES ON nextcloud.* TO 'oc_root'@'127.0.0.1'" 
+	
 
 	# Now restore the database
 	echo "Importing database..."
-	if ! run-mysql nextcloud < "$database_backup"; then
+	# if ! mysql -h 127.0.0.1 -pmysql_password nextcloud < "$database_backup"; then
+	if ! mysql -u root -h 127.0.0.1 -pmysql_password nextcloud < "$database_backup"; then
 		echo "Unable to import database"
 		exit 1
 	fi
@@ -70,7 +90,7 @@ import_config()
 	backup_dir="$1"
 	config_backup="${backup_dir}/config.php"
 	database_password="$(mysql_get_nextcloud_password)"
-
+	echo "database_password=$database_password"
 	# Import the config, but set our new database password
 	echo "Importing config..."
 	if ! sed "s/DBPASSWORD/$database_password/" \
@@ -84,9 +104,9 @@ import_data()
 {
 	backup_dir="${1%/}"
 	data_backup="${backup_dir}/data"
-	run_command "Clearing existing data" rm -rf "$NEXTCLOUD_DATA_DIR"
+	run_command "Clearing existing data" rm -rf "$CUSTOM_NEXTCLOUD_DATADIR"
 	echo "Importing data..."
-	if ! rsync -ah --info=progress2 "$data_backup/" "$NEXTCLOUD_DATA_DIR"; then
+	if ! rsync -ah --info=progress2 "$data_backup/" "$CUSTOM_NEXTCLOUD_DATADIR"; then
 		echo "Unable to import data"
 		exit 1
 	fi
@@ -158,6 +178,7 @@ fi
 
 if [ "$do_import_database" = true ]; then
 	import_database "$backup_dir"
+	# echo "skip database import"
 fi
 
 if [ "$do_import_config" = true ]; then
