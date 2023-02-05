@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-# shellcheck source=src/common/utilities/common-utilities
-. "$SNAP/utilities/common-utilities"
+# shellcheck source=src/common/utilities/common_utilities
+source "common_utilities"
 
 export MYSQL_ROOT_OPTION_FILE="$SNAP_DATA/mysql/root.ini"
 export MYSQL_PIDFILE="/tmp/pids/mysql.pid"

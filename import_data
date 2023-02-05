@@ -1,9 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 
-# sudo src/import-export/bin/import-data /home/name/git/backup0/20230127-034839
-# sudo src/import-export/bin/import-data /home/name/git/backup0/20230127-105653
-# sudo src/import-export/bin/import-data /home/name/git/backup0/20230127-112224 # without appointment
-# sudo src/import-export/bin/import-data /home/name/git/backup0/20230127-112545 # with appointment
+# sudo ./import-data /home/name/git/backup0/20230127-034839
+# sudo ./import-data /home/name/git/backup0/20230127-105653
+# sudo ./import-data /home/name/git/backup0/20230127-112224 # without appointment
+# sudo ./import-data /home/name/git/backup0/20230127-112545 # with appointment
+
+source "nextcloud_utilities"
+# shellcheck source=src/mysql/utilities/mysql-utilities
+# . "$SNAP/utilities/mysql-utilities"
+source "mysql_utilities"
+source common_utilities
 
 
 
@@ -18,12 +24,6 @@ MYSQL_ROOT_OPTION_FILE="$SNAP_DATA/mysql/root.ini"
 CUSTOM_NEXTCLOUD_DATADIR="/var/snap/nextcloud/common/nextcloud/data"
 
 # shellcheck source=src/nextcloud/utilities/nextcloud-utilities
-. "src/nextcloud/utilities/nextcloud-utilities"
-# shellcheck source=src/mysql/utilities/mysql-utilities
-# . "$SNAP/utilities/mysql-utilities"
-. "src/mysql/utilities/mysql-utilities"
-. src/common/utilities/common-utilities
-. $SNAP/utilities
 
 
 # shellcheck disable=SC2119

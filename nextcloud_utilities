@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-# shellcheck source=src/common/utilities/common-utilities
-. "$SNAP/utilities/common-utilities"
+# shellcheck source=src/common/utilities/common_utilities
+source common_utilities
 
 export NEXTCLOUD_CONFIG_DIR="$SNAP_DATA/nextcloud/config"
 export NEXTCLOUD_DATA_DIR="$SNAP_COMMON/nextcloud/data"
@@ -21,7 +21,7 @@ wait_for_nextcloud_to_be_configured()
 nextcloud_is_installed()
 {
 	# Urgh, occ still prints text warnings even with JSON output. Thus fromjson?.
-	installed="$(occ -n status --output=json | jq -R 'fromjson? | .installed')"
+	installed="$(nextcloud.occ -n status --output=json | jq -R 'fromjson? | .installed')"
 	[ "$installed" = "true" ]
 }
 

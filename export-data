@@ -1,33 +1,18 @@
-#!/bin/sh
-# sudo src/import-export/bin/export-data
+#!/bin/bash
+# sudo ./export-data
+# sudo ./export-data -a -b -c -d
+
+source nextcloud_utilities
+source common_utilities
 if [ "$(id -u)" -ne 0 ]; then
 	echo "This utility needs to run as root"
 	exit 1
 fi
-SNAP="src/common"
+#SNAP="src/common"
 SNAP_DATA=/var/snap/nextcloud/current/
 MYSQL_ROOT_OPTION_FILE="$SNAP_DATA/mysql/root.ini"
 CUSTOM_NEXTCLOUD_DATADIR="/var/snap/nextcloud/common/nextcloud/data"
 
-# shellcheck source=src/nextcloud/utilities/nextcloud-utilities
-. "src/nextcloud/utilities/nextcloud-utilities"
-# shellcheck source=src/mysql/utilities/mysql-utilities
-# . "$SNAP/utilities/mysql-utilities"
-# shellcheck source=src/common/utilities/common-utilities
-. $SNAP/utilities
-
-# Done custom imports
-
-# export MYSQL_ROOT_OPTION_FILE="$SNAP_DATA/mysql/root.ini"
-# export MYSQL_PIDFILE="/tmp/pids/mysql.pid"
-# export MYSQL_SOCKET="/tmp/sockets/mysql.sock"
-# export NEXTCLOUD_PASSWORD_FILE="$SNAP_DATA/mysql/nextcloud_password"
-# MYSQL_SETUP_LOCKFILE="/tmp/locks/mysql-setup"
-
-# mysql_nextcloud_password='mysql_password'
-
-# shellcheck disable=SC2119
-wait_for_mysql
 
 COMMAND="nextcloud.export"
 # BACKUP_DIRECTORY="${SNAP_COMMON}/backups"
